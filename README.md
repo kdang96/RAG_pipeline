@@ -8,6 +8,19 @@ TODO: Guide users through getting your code up and running on their own system. 
 3.	Latest releases
 4.	API references
 
+## Documents
+
+**The documents' heading structure has been amended for ease of parsing.**
+
+State Treaty on the modernisation of media legislation in Germany (N-2020-0026-000-EN.DOCX)
+https://technical-regulation-information-system.ec.europa.eu/en/notification/15957/text/D/EN
+
+REPORT FROM THE COMMISSION TO THE EUROPEAN PARLIAMENT, THE COUNCIL AND THE EUROPEAN ECONOMIC AND SOCIAL COMMITTEE ON THE OPERATION OF THE SINGLE MARKET TRANSPARENCY DIRECTIVE FROM 2016 ΤΟ 2020 (1_EN_ACT_part1_v4.docx)
+https://secure.ipex.eu/IPEXL-WEB/download/file/082d29088354edb301836a5c43790652
+
+REPORT FROM THE COMMISSION TO THE EUROPEAN PARLIAMENT, THE COUNCIL AND THE EUROPEAN ECONOMIC AND SOCIAL COMMITTEEON THE OPERATION OF DIRECTIVE (EU) 2015/1535 FROM 2014 ΤΟ 2015 (1_EN_ACT_part1_v5.docx)
+https://secure.ipex.eu/IPEXL-WEB/download/file/082dbcc5618c772b01618ff34350045d
+
 # Build and Test
 TODO: Describe and show how to build your code and run the tests.
 
