@@ -26,7 +26,7 @@ import numpy as np
 import typer
 from tqdm import tqdm
 
-from utils.general_util import read_jsonl
+from utils.general_util import format_entities_for_llm, read_jsonl
 from src.vector_store.milvus  import insert_data, VECTOR_DB_ROW, connect_to_db, create_index, Embedder, Config, does_collection_exist
 from pymilvus import DataType
 
@@ -76,10 +76,33 @@ def add_soi_collection(db_name:str, name: str) -> None:
             description="The primary key.",
         )
         schema.add_field(
+            field_name="chunk_id",
+            datatype=DataType.INT64,
+            description="The chunk of text to be embedded.",
+        )
+        schema.add_field(
             field_name="doc_title",
             datatype=DataType.VARCHAR,
             max_length=50,
             description="The name of the document.",
+        )
+        schema.add_field(
+            field_name="heading_2",
+            datatype=DataType.VARCHAR,
+            max_length=65535,
+            description="The chunk of text to be embedded.",
+        )
+        schema.add_field(
+            field_name="heading_3",
+            datatype=DataType.VARCHAR,
+            max_length=65535,
+            description="The chunk of text to be embedded.",
+        )
+        schema.add_field(
+            field_name="heading_4",
+            datatype=DataType.VARCHAR,
+            max_length=65535,
+            description="The chunk of text to be embedded.",
         )
         schema.add_field(
             field_name="chunk",
@@ -88,7 +111,7 @@ def add_soi_collection(db_name:str, name: str) -> None:
             description="The chunk of text to be embedded.",
         )
         schema.add_field(
-            field_name="chunk_vector",
+            field_name="combined_vector",
             datatype=DataType.FLOAT_VECTOR,
             dim=1024,
             description="A vector embedding of the 'chunk' field.",
@@ -105,12 +128,16 @@ def add_soi_collection(db_name:str, name: str) -> None:
 # --------------------------------------------------------------------------- #
 # Data transformation
 # --------------------------------------------------------------------------- #
-def chunk_to_db_row(chunks: dict[str, str]) -> VECTOR_DB_ROW:
+def chunk_to_db_row(chunks: dict[str, str|int]) -> VECTOR_DB_ROW:
     """Transform a validated ``SOI`` into the DB‑row schema."""
     return VECTOR_DB_ROW(
         doc_title=chunks["doc_title"],
+        chunk_id=chunks["chunk_id"],
+        heading_2=chunks["heading_2"],
+        heading_3=chunks["heading_3"],
+        heading_4=chunks["heading_4"],
         chunk=chunks["chunk"],
-        chunk_vector=np.empty((0,)),  # placeholder, will be replaced later
+        combined_vector=np.empty((0,)),  # placeholder, will be replaced later
     )
 
 
@@ -133,13 +160,16 @@ def process_pipeline(config: Config, chunks: Generator[dict]| list[dict]) -> Non
     # -------------------------------------------------------------------- #
     # 1. Create embeddings for *all* summaries in one shot
     # -------------------------------------------------------------------- #
-    summaries = [row["chunk"] for row in db_rows]
-    embeddings: list = Embedder.embed(summaries, config)
+    keys_to_keep = ["doc_title", "heading_2", "heading_3", "heading_4", "chunk"]
+    
+    filtered: list[dict[str, Any]] = [{k: v for k, v in chunk.items() if k in keys_to_keep} for chunk in chunks]
+    to_embed: list[str] = [format_entities_for_llm([item]) for item in filtered]
+
+    embeddings: list = Embedder.embed(to_embed, config)
 
     # Attach embeddings to the rows
     for row, vector in zip(db_rows, embeddings):
-        row["chunk_vector"] = vector
-
+        row["combined_vector"] = vector
     # -------------------------------------------------------------------- #
     # 2. Insert into the database
     # -------------------------------------------------------------------- #
@@ -160,8 +190,8 @@ def process_pipeline(config: Config, chunks: Generator[dict]| list[dict]) -> Non
     create_index(
         db_path=config.db_path,
         collection_name=config.collection,
-        vector_col_name="chunk_vector",
-        index_name="chunk_vector_index",
+        vector_col_name="combined_vector",
+        index_name="combined_vector_index",
     )
 
 
@@ -189,6 +219,7 @@ def main(
         trust_remote_code=trust_remote_code,
     )
     chunks = read_jsonl(data_dir)
+
     logger.info("Running with config: %s", config)
 
     process_pipeline(config, chunks)

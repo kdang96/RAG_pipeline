@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.figure import Figure
 from langchain_ollama.chat_models import ChatOllama
+import ollama
+from langchain_core.tools import tool
 from openai import OpenAI
 from test_pipeline.pipelines.evaluation.rag_eval_metrics import calc_faithfulness, calc_relevancy_score
 from ragas import SingleTurnSample
@@ -42,7 +44,7 @@ TOOLS = [
             "name": "similarity_search",
             "description": "Search the Milvus database using vector similarity",
             "parameters": {
-                "type": "string",
+                "type": "object",
                 "properties": {
                     "field": {
                         "type": "string",
@@ -118,22 +120,8 @@ def visualise_metrics(eval_metrics) -> Figure:
     return fig
 
 
+summarising_llm = ChatOllama(model="gpt-oss:20b", temperature=1, num_ctx=131072, keep_alive=0, num_gpu=24)
 
-# Model definitions
-client = OpenAI(
-    base_url="http://localhost:11434/v1",  # Local Ollama API
-    api_key="ollama",  # Dummy key
-)
-
-# agentic_llm = ChatOllama(model="gpt-oss", temperature=1, num_ctx=131072, keep_alive=0, num_gpu=24)
-summarising_llm = ChatOllama(
-    model="mistral-small3.2:24b-instruct-2506-q4_K_M",
-    temperature=0,
-    num_ctx=132768,
-    keep_alive=0,
-)
-
-# summarising_llm = ChatOllama(model="qwen3:4b", temperature=0, num_ctx=132768, keep_alive=0, num_gpu=40)
 embedding_model = SentenceTransformer(
     model_name_or_path="intfloat/e5-large-v2", device="cuda", trust_remote_code=True
 )
@@ -146,36 +134,35 @@ def react_agent(question: str, config: Config, max_iters=3):
     print(fields_n_descriptions)
 
     prompt = BASE_PROMPT.format(user_query=question, fields=fields_n_descriptions)
-    history = prompt
 
-    # this works with OpenAI library, Ollama integration
-    response = client.chat.completions.create(
-        model="gpt-oss:20b",
-        messages=[{"role": "user", "content": history}],
-        tools=TOOLS,
-        tool_choice="auto",
-        temperature=1,
-    )
 
-    reasoning = response.choices[0].message.model_extra["reasoning"]
-
+    response = ollama.chat(
+                    model="gpt-oss:20b",
+                    messages=[{"role": "user", "content": prompt}],
+                    tools=TOOLS,
+                    options = {
+                        "tool_choice": "auto",
+                        "temperature": 1
+                        }
+                )
+    reasoning = response.message.thinking
     print("Model reasoning:\n", reasoning)
-    print("Function:", response.choices[0].message.tool_calls[0].function.name)
-    print("Tools args:\n", response.choices[0].message.tool_calls[0].function.arguments)
-
-    # response = gpt_oss_general_query(history, temperature=0)
-    # text = response.strip()
 
     # Look for an Action
     obs, llm_table = tools(response, config)
 
     print(f"User query:{question}\n Available information:" + llm_table)
-    result = summarising_llm.invoke(
-        f"""User query:{question}\n An agentic tool has been used to extract the below data in response to the user query. Output it in natural language.
-                                         Returned results should include but not be limited to the relevant project titles and work order(WO) numbers (e.g, U-WO000XXX) when outputting specific project info.
-                                         Available information:"""
-        + llm_table
-    )
+
+    messages = [
+        ("system", """ An agentic tool has been used to extract the below data in response to the user query. Output it in natural language.
+                        When returning results clearly define what information originates from the retrieved document and what out of you weights.
+                        Showing data provenance is very important."""),
+        ("human", f"""User query:{question}\n
+                        Available information:"""
+        + llm_table )
+    ]
+
+    result = summarising_llm.invoke(messages)
 
     eval_metrics = evaluate(
         user_query=question, observations=obs, llm_response=result.content
@@ -192,10 +179,12 @@ def react_agent(question: str, config: Config, max_iters=3):
 
 # Here is defined function logic that the agent can use
 def tools(llm_response, config: Config) -> Tuple[list[dict], str]:
-    action = llm_response.choices[0].message.tool_calls[0].function.name
-    args = json.loads(llm_response.choices[0].message.tool_calls[0].function.arguments)
-    field = args["field"]
+    action = llm_response.message.tool_calls[0].function.name
+    args = llm_response.message.tool_calls[0].function.arguments
     action_input = args["input"]
+
+    print("Function:", action)
+    print("Tools args:\n", args)
 
     if action.lower() == "similarity_search":
         output_fields = args["output_fields"]
@@ -206,14 +195,17 @@ def tools(llm_response, config: Config) -> Tuple[list[dict], str]:
         obs = search(
             config=config,
             user_query=action_input,
-            search_col="chunk_vector",
-            output_fields = ["doc_title","chunk"],
-            search_radius = 0.78,
-            k_limit = 5
+            search_col="combined_vector",
+            output_fields = ["doc_title", "chunk_id", "heading_2", "heading_3", "heading_4", "chunk"],
+            search_radius = 0.815,
+            k_limit = 10
         )
-
-        obs = [x for x in obs]
-        llm_table = format_entities_for_llm(obs)
+        
+        if obs:
+            obs = [x["entity"] for x in obs]
+            llm_table = format_entities_for_llm(obs)
+        else:
+            obs = "No information was retrieved."
     else:
         obs = f"Unknown action: {action}"
         llm_table = str(obs)
@@ -224,7 +216,7 @@ def tools(llm_response, config: Config) -> Tuple[list[dict], str]:
 
 def evaluate(user_query: str, observations: list[str], llm_response: str):
 
-    return 0
+    return {"dummy_eval": 0}
 
 
 def chatbot_fn(message, history, cfg):

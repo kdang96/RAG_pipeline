@@ -30,8 +30,12 @@ class VECTOR_DB_ROW(TypedDict):
     """Schema that will be inserted into the database."""
 
     doc_title: str
+    chunk_id: int
+    heading_2: str
+    heading_3: str
+    heading_4: str
     chunk: str
-    chunk_vector: np.ndarray
+    combined_vector: np.ndarray
 
 
 

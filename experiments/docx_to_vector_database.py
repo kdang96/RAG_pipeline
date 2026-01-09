@@ -28,4 +28,4 @@ def run_pipline(docx_dir: str):
 
 
 if __name__ == "__main__":
-    run_pipline(r"./data/demo_docx")
+    run_pipline(r"data/input")
