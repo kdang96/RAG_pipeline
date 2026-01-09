@@ -1,0 +1,41 @@
+{"query_id":"q0", "query": "What are the due diligence obligations for German media?", "expected_chunks_ids": [9, 22, 37, 0]}
+
+{"query_id":"q1","query":"What services does the State Media Treaty apply to?", "expected_chunks_ids":[2]}
+
+{"query_id":"q2","query":"Under which conditions is a television broadcaster considered established in Germany?", "expected_chunks_ids":[2]}
+
+{"query_id":"q3","query":"What types of programmes are excluded from the scope of the State Media Treaty?", "expected_chunks_ids":[2]}
+
+{"query_id":"q4","query":"How does the treaty define broadcasting and telemedia?", "expected_chunks_ids":[3]}
+
+{"query_id":"q5","query":"What is considered surreptitious advertising under the treaty?", "expected_chunks_ids":[3]}
+
+{"query_id":"q6","query":"What information must broadcasters make easily accessible to users?", "expected_chunks_ids":[7]}
+
+{"query_id":"q7","query":"What journalistic due diligence obligations apply to reporting and information programmes?", "expected_chunks_ids":[9]}
+
+{"query_id":"q8","query":"Which types of advertising are explicitly prohibited by the treaty?", "expected_chunks_ids":[11]}
+
+{"query_id":"q9","query":"Which events are classified as major events that must be broadcast free-to-air?", "expected_chunks_ids":[16]}
+
+{"query_id":"q10","query":"What rights do television broadcasters have regarding short reporting on public events?", "expected_chunks_ids":[16]}
+
+{"query_id":"q11","query":"Which media services and providers fall under the scope of the State Media Treaty?", "expected_chunks_ids":[2, 3]}
+
+{"query_id":"q12","query":"How does the treaty determine whether a television broadcaster is under German jurisdiction?", "expected_chunks_ids":[2, 18]}
+
+{"query_id":"q13","query":"What distinguishes broadcasting services from telemedia under the treaty?", "expected_chunks_ids":[3, 20]}
+
+{"query_id":"q14","query":"What information and transparency obligations apply to broadcasters and telemedia providers?", "expected_chunks_ids":[7, 21]}
+
+{"query_id":"q15","query":"What journalistic due diligence standards apply across broadcasting and telemedia services?", "expected_chunks_ids":[9, 22]}
+
+{"query_id":"q16","query":"Which forms of advertising and sponsorship are restricted or prohibited across media services?", "expected_chunks_ids":[11, 13, 25]}
+
+{"query_id":"q17","query":"How does the treaty regulate the broadcasting and accessibility of major public events?",  "expected_chunks_ids":[16, 17]}
+
+{"query_id":"q18","query":"What special obligations apply to public service broadcasters in fulfilling their mandate?", "expected_chunks_ids":[30, 31, 35]}
+
+{"query_id":"q19","query":"How are telemedia offers by public service broadcasters regulated and limited?", "expected_chunks_ids":[34, 36, 37]}
+
+{"query_id":"q20","query":"How does the treaty ensure diversity of opinion in private broadcasting?", "expected_chunks_ids":[66, 67, 71]}
