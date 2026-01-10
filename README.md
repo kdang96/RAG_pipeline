@@ -21,6 +21,10 @@ https://secure.ipex.eu/IPEXL-WEB/download/file/082d29088354edb301836a5c43790652
 REPORT FROM THE COMMISSION TO THE EUROPEAN PARLIAMENT, THE COUNCIL AND THE EUROPEAN ECONOMIC AND SOCIAL COMMITTEEON THE OPERATION OF DIRECTIVE (EU) 2015/1535 FROM 2014 ΤΟ 2015 (1_EN_ACT_part1_v5.docx)
 https://secure.ipex.eu/IPEXL-WEB/download/file/082dbcc5618c772b01618ff34350045d
 
+Although several chunks exceed the effective context window of the embedding model, this setup is retained to illustrate realistic failure modes of retrieval in long, densely structured documents rather than to maximise benchmark performance.
+
+Despite exceeding the embedding model’s optimal context length, the oversized chunk is often retrieved correctly due to reduced intra-document competition, illustrating how corpus-level dynamics can offset suboptimal chunk granularity in small collections.
+
 # Build and Test
 TODO: Describe and show how to build your code and run the tests.
 
