@@ -26,7 +26,7 @@ import numpy as np
 import typer
 from tqdm import tqdm
 
-from utils.general_util import format_entities_for_llm, read_jsonl
+from src.utils.general_util import format_entities_for_llm, read_jsonl
 from src.vector_store.milvus  import insert_data, VECTOR_DB_ROW, connect_to_db, create_index, Embedder, Config, does_collection_exist
 from pymilvus import DataType
 
@@ -41,19 +41,6 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     stream=sys.stdout,
 )
-
-
-def read_jsonl(path: Path) -> Generator[Any, Any, Any]:
-    """Load JSON and raise a descriptive exception on failure."""
-    try:
-        with open(path, encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    yield json.loads(line)                  
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"Invalid JSON in {path}") from exc
-    except OSError as exc:
-        raise RuntimeError(f"Cannot read {path}") from exc
 
 
 # --------------------------------------------------------------------------- #

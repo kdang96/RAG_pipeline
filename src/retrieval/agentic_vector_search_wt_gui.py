@@ -1,25 +1,17 @@
-import json
 from typing import Tuple
 import typer
 from pathlib import Path
 import logging
 import sys
-
-
 import gradio as gr
 import matplotlib.pyplot as plt
-import pandas as pd
 from matplotlib.figure import Figure
 from langchain_ollama.chat_models import ChatOllama
 import ollama
-from langchain_core.tools import tool
-from openai import OpenAI
-from test_pipeline.pipelines.evaluation.rag_eval_metrics import calc_faithfulness, calc_relevancy_score
-from ragas import SingleTurnSample
 from sentence_transformers import SentenceTransformer
+from src.utils.general_util import format_entities_for_llm
 from src.vector_store.milvus import (
     get_collection_fields,
-    query,
     search,
     Config
 )
@@ -86,38 +78,6 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     stream=sys.stdout,
 )
-
-def format_entities_for_llm(entities: list[dict]) -> str:
-    """
-    Convert a dictionary of entities into a clean,
-    descriptive, LLM-friendly text block.
-    """
-    lines = []
-
-    for entity in entities:
-        for key, value in entity.items():
-            if type(value) is not float:
-                lines.append(f"  - {key}: {value}")
-            else:
-                lines.append(f"  - {key}: {value:.5f}")
-        lines.append("")  # blank line between entities
-
-    return "\n".join(lines)
-
-def visualise_metrics(eval_metrics) -> Figure:
-    # Create bar chart with matplotlib
-    fig, ax = plt.subplots(figsize=(4, 3))
-    bar = ax.bar(
-        eval_metrics.keys(),
-        eval_metrics.values(),
-        color=["#4CAF50", "#2196F3", "#FFC107"],
-    )
-    ax.set_ylim([0, 1])
-    ax.bar_label(bar)
-    ax.set_ylabel("Score")
-    ax.set_title("Evaluation Metrics")
-
-    return fig
 
 
 summarising_llm = ChatOllama(model="gpt-oss:20b", temperature=1, num_ctx=131072, keep_alive=0, num_gpu=24)
@@ -194,7 +154,7 @@ def tools(llm_response, config: Config) -> Tuple[list[dict], str]:
 
         obs = search(
             config=config,
-            user_query=action_input,
+            user_queries=[action_input],
             search_col="combined_vector",
             output_fields = ["doc_title", "chunk_id", "heading_2", "heading_3", "heading_4", "chunk"],
             search_radius = 0.815,
@@ -202,7 +162,7 @@ def tools(llm_response, config: Config) -> Tuple[list[dict], str]:
         )
         
         if obs:
-            obs = [x["entity"] for x in obs]
+            obs = [x[0]["entity"] for x in obs]
             llm_table = format_entities_for_llm(obs)
         else:
             obs = "No information was retrieved."
@@ -257,13 +217,12 @@ def main(
                 clear = gr.Button("Clear Chat")
             with gr.Column(scale=2):
                 reasoning_box = gr.Textbox(label="Model Reasoning Trace", lines=15)
-                metrics_plot = gr.Plot(label="Evaluation Metrics")
 
         chat_state = gr.State([])            # holds chat history
         config_state = gr.State(value=config)  # hold the Config so it can be passed to rag()
 
-        msg.submit(chatbot_fn, [msg, chat_state, config_state], [chatbot, chat_state, reasoning_box, metrics_plot])
-        clear.click(lambda: ([], [], "", visualise_metrics({})), None, [chatbot, chat_state, reasoning_box, metrics_plot])
+        msg.submit(chatbot_fn, [msg, chat_state, config_state], [chatbot, chat_state, reasoning_box])
+        clear.click(lambda: ([], [], ""), None, [chatbot, chat_state, reasoning_box])
 
     demo.launch()
 
