@@ -1,41 +1,81 @@
-{"query_id":"q0", "query": "What are the due diligence obligations for German media?", "expected_chunks_ids": [9, 22, 37, 0]}
+{"query_id":"q0", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query": "What are the due diligence obligations for German media?", "expected_chunk_ids": [9, 22, 37, 0]}
 
-{"query_id":"q1","query":"What services does the State Media Treaty apply to?", "expected_chunks_ids":[2]}
+{"query_id":"q1", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What services does the State Media Treaty apply to?", "expected_chunk_ids":[2]}
 
-{"query_id":"q2","query":"Under which conditions is a television broadcaster considered established in Germany?", "expected_chunks_ids":[2]}
+{"query_id":"q2", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"Under which conditions is a television broadcaster considered established in Germany?", "expected_chunk_ids":[2]}
 
-{"query_id":"q3","query":"What types of programmes are excluded from the scope of the State Media Treaty?", "expected_chunks_ids":[2]}
+{"query_id":"q3", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What types of programmes are excluded from the scope of the State Media Treaty?", "expected_chunk_ids":[2]}
 
-{"query_id":"q4","query":"How does the treaty define broadcasting and telemedia?", "expected_chunks_ids":[3]}
+{"query_id":"q4", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"How does the treaty define broadcasting and telemedia?", "expected_chunk_ids":[3]}
 
-{"query_id":"q5","query":"What is considered surreptitious advertising under the treaty?", "expected_chunks_ids":[3]}
+{"query_id":"q5", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What is considered surreptitious advertising under the treaty?", "expected_chunk_ids":[3]}
 
-{"query_id":"q6","query":"What information must broadcasters make easily accessible to users?", "expected_chunks_ids":[7]}
+{"query_id":"q6", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What information must broadcasters make easily accessible to users?", "expected_chunk_ids":[7]}
 
-{"query_id":"q7","query":"What journalistic due diligence obligations apply to reporting and information programmes?", "expected_chunks_ids":[9]}
+{"query_id":"q7", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What journalistic due diligence obligations apply to reporting and information programmes?", "expected_chunk_ids":[9]}
 
-{"query_id":"q8","query":"Which types of advertising are explicitly prohibited by the treaty?", "expected_chunks_ids":[11]}
+{"query_id":"q8", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"Which types of advertising are explicitly prohibited by the treaty?", "expected_chunk_ids":[11]}
 
-{"query_id":"q9","query":"Which events are classified as major events that must be broadcast free-to-air?", "expected_chunks_ids":[16]}
+{"query_id":"q9", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"Which events are classified as major events that must be broadcast free-to-air?", "expected_chunk_ids":[16]}
 
-{"query_id":"q10","query":"What rights do television broadcasters have regarding short reporting on public events?", "expected_chunks_ids":[16]}
+{"query_id":"q10", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What rights do television broadcasters have regarding short reporting on public events?", "expected_chunk_ids":[16]}
 
-{"query_id":"q11","query":"Which media services and providers fall under the scope of the State Media Treaty?", "expected_chunks_ids":[2, 3]}
+{"query_id":"q11", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"Which media services and providers fall under the scope of the State Media Treaty?", "expected_chunk_ids":[2, 3]}
 
-{"query_id":"q12","query":"How does the treaty determine whether a television broadcaster is under German jurisdiction?", "expected_chunks_ids":[2, 18]}
+{"query_id":"q12", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"How does the treaty determine whether a television broadcaster is under German jurisdiction?", "expected_chunk_ids":[2, 18]}
 
-{"query_id":"q13","query":"What distinguishes broadcasting services from telemedia under the treaty?", "expected_chunks_ids":[3, 20]}
+{"query_id":"q13", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What distinguishes broadcasting services from telemedia under the treaty?", "expected_chunk_ids":[3, 20]}
 
-{"query_id":"q14","query":"What information and transparency obligations apply to broadcasters and telemedia providers?", "expected_chunks_ids":[7, 21]}
+{"query_id":"q14", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What information and transparency obligations apply to broadcasters and telemedia providers?", "expected_chunk_ids":[7, 21]}
 
-{"query_id":"q15","query":"What journalistic due diligence standards apply across broadcasting and telemedia services?", "expected_chunks_ids":[9, 22]}
+{"query_id":"q15", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What journalistic due diligence standards apply across broadcasting and telemedia services?", "expected_chunk_ids":[9, 22]}
 
-{"query_id":"q16","query":"Which forms of advertising and sponsorship are restricted or prohibited across media services?", "expected_chunks_ids":[11, 13, 25]}
+{"query_id":"q16", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"Which forms of advertising and sponsorship are restricted or prohibited across media services?", "expected_chunk_ids":[11, 13, 25]}
 
-{"query_id":"q17","query":"How does the treaty regulate the broadcasting and accessibility of major public events?",  "expected_chunks_ids":[16, 17]}
+{"query_id":"q17", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"How does the treaty regulate the broadcasting and accessibility of major public events?",  "expected_chunk_ids":[16, 17]}
 
-{"query_id":"q18","query":"What special obligations apply to public service broadcasters in fulfilling their mandate?", "expected_chunks_ids":[30, 31, 35]}
+{"query_id":"q18", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"What special obligations apply to public service broadcasters in fulfilling their mandate?", "expected_chunk_ids":[30, 31, 35]}
 
-{"query_id":"q19","query":"How are telemedia offers by public service broadcasters regulated and limited?", "expected_chunks_ids":[34, 36, 37]}
+{"query_id":"q19", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"How are telemedia offers by public service broadcasters regulated and limited?", "expected_chunk_ids":[34, 36, 37]}
 
-{"query_id":"q20","query":"How does the treaty ensure diversity of opinion in private broadcasting?", "expected_chunks_ids":[66, 67, 71]}
+{"query_id":"q20", "related_doc": "State Treaty on the Modernisation of Media Legislation in Germany", "query":"How does the treaty ensure diversity of opinion in private broadcasting?", "expected_chunk_ids":[66, 67, 71]}
+
+{"query_id":"q21", "related_doc": "Report on the Operation of Single Market Transparency", "query":"What are the four main axes guiding the implementation of the Single Market Transparency Directive?", "expected_chunk_ids":[162, 164]}
+
+{"query_id":"q22", "related_doc": "Report on the Operation of Single Market Transparency", "query":"How does the notification procedure enable cooperation between the Commission and Member States before national technical regulations are adopted?", "expected_chunk_ids":[162, 163]}
+
+{"query_id":"q23", "related_doc": "Report on the Operation of Single Market Transparency", "query":"Why was the notification procedure particularly important for maintaining the single market during emergency situations such as COVID-19?", "expected_chunk_ids":[162, 168, 171]}
+
+{"query_id":"q24", "related_doc": "Report on the Operation of Single Market Transparency", "query":"Which sectors generated the highest number of notifications between 2016 and 2020?", "expected_chunk_ids":[166, 162]}
+
+{"query_id":"q25", "related_doc": "Report on the Operation of Single Market Transparency", "query":"How does the Commission assess notified draft technical regulations in non-harmonised versus harmonised areas?", "expected_chunk_ids":[167, 166]}
+
+{"query_id":"q26", "related_doc": "Report on the Operation of Single Market Transparency", "query":"Under what conditions can Member States invoke the urgency procedure, and how often was it used?", "expected_chunk_ids":[171, 173]}
+
+{"query_id":"q27", "related_doc": "Report on the Operation of Single Market Transparency", "query":"What types of measures qualify as fiscal or financial measures under the Directive, and what is their procedural peculiarity?", "expected_chunk_ids":[172, 167]}
+
+{"query_id":"q28", "related_doc": "Report on the Operation of Single Market Transparency", "query":"What happens when Member States fail to adequately address concerns raised in Commission detailed opinions?", "expected_chunk_ids":[173, 174]}
+
+{"query_id":"q29", "related_doc": "Report on the Operation of Single Market Transparency", "query":"How does the TRIS website support transparency and participation by stakeholders and economic operators?", "expected_chunk_ids":[163, 178]}
+
+{"query_id":"q30", "related_doc": "Report on the Operation of Single Market Transparency", "query":"What evidence does the report provide that the notification procedure reduced the risk of new technical barriers in the single market?", "expected_chunk_ids":[178, 168]}
+
+{"query_id":"q31", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"How many notifications did the Commission receive in total during 2014-2015?",  "expected_chunk_ids":[153]}
+
+{"query_id":"q32", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"What percentage of detailed opinions issued by the Commission were replied to by Member States during 2014-2015?",  "expected_chunk_ids":[156]}
+
+{"query_id":"q33", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"In which two CJEU cases from the reporting period was the Single Market Transparency Directive interpreted?",  "expected_chunk_ids":[151]}
+
+{"query_id":"q34", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"What was the most notified sector in terms of number of draft technical regulations during 2014-2015?",  "expected_chunk_ids":[153]}
+
+{"query_id":"q35", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"How many urgency procedure requests were accepted by the Commission in the years 2014 and 2015 combined?",  "expected_chunk_ids":[154]}
+
+{"query_id":"q36", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"Name three positive examples where Member States amended or withdrew notified drafts following Commission detailed opinions in 2014-2015.",  "expected_chunk_ids":[153]}
+
+{"query_id":"q37", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"What recurring problem concerning European harmonised standards was frequently addressed by the Commission in detailed opinions?",  "expected_chunk_ids":[153]}
+
+{"query_id":"q38", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"How many draft technical regulations were classified as 'fiscal or financial incentive measures' during the 2014-2015 period?",  "expected_chunk_ids":[155]}
+
+{"query_id":"q39", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"Which new TRIS website functionality was introduced in June 2016 that improved stakeholder contributions?",  "expected_chunk_ids":[150]}
+
+{"query_id":"q40", "related_doc": "Report on the Operation of Directive (EU) 2015-1535", "query":"According to the report, approximately what percentage of notifications in 2014-2015 were accompanied by impact studies submitted by Member States?",  "expected_chunk_ids":[148]}

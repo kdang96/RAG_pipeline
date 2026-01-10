@@ -239,17 +239,17 @@ def query(
 
 def search(
     config: Config,
-    user_query: str,
+    user_queries: list[str],
     search_col: str,
     output_fields: list[str],
     k_limit: int = 10,
     search_radius: float = 0.75,
-) -> list[dict]:
+) -> list[list[dict]]:
     client, _ = connect_to_db(config.db_path)
     client.load_collection(config.collection)
     client.refresh_load(config.collection)
 
-    query_vector = Embedder.embed([user_query], config)
+    query_vector = Embedder.embed(user_queries, config)
 
     results = client.search(
         collection_name=config.collection,
@@ -262,7 +262,7 @@ def search(
 
     client.close()
 
-    return results[0]
+    return results
 
 
 
