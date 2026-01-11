@@ -1,12 +1,6 @@
-DELETE.py
-DEL.py
-DEL.md
-PAT.txt
-test_pipeline/ncc_data/inputs/
-test_pipeline/DEL copy.py
-.milvus_demo.db.lock
-__pycache__/
-test_pipeline/DEL2.py
-test_pipeline/docx_processing/__pycache__/crop_images.cpython-310.pyc
-LLM_Atlas.code-workspace
 .vscode/settings.json
+vscode_cli.tar.gz
+.continue/
+.vscode/
+.env
+.pre-commit-config.yaml
