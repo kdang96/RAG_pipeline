@@ -5,6 +5,18 @@ import typer
 from src.utils.general_util import read_jsonl
 from src.vector_store.milvus import Config, search
 
+"""
+Offline retrieval evaluation.
+
+This module intentionally excludes any LLM usage to ensure
+deterministic, reproducible measurement of retrieval quality
+(Recall@k) independent of generation effects.
+"""
+
+# ---------------------------------------------------------------- #
+# Metrics - Recall@k --------------------------------------------- #
+# ---------------------------------------------------------------- #
+
 def recall_at_k(expected: list[int], observed: list[int]):
     # 1.  Convert expected list to a set (hash‑based, O(1) look‑up)
     expected_set = set(expected)
@@ -19,6 +31,17 @@ def recall_at_k(expected: list[int], observed: list[int]):
 
     return recall_at_k, hit_ratio,
 
+
+def mrr_at_k(expected: list[int], observed: list[int]) -> float:
+    """
+    Compute the reciprocal rank for a single query.
+    Returns 1/(rank) where rank is 1‑based index of the first relevant item.
+    If no relevant item is found, returns 0.0.
+    """
+    for idx, item in enumerate(observed):
+        if item in expected:
+            return 1.0 / (idx + 1)   # 1‑based rank
+    return 0.0
 
 # ---------------------------------------------------------------- #
 # Evaluate RAG --------------------------------------------------- #
@@ -47,24 +70,27 @@ def evaluate_rag(config: Config, test_set: Generator) -> None:
 
     # 3  Iterate over the materialised items again for recall@k.
     all_recall = []
+    all_mrr = []
     for i, chunk in enumerate(items):
         obs_chunk_ids = [x["entity"]["chunk_id"] for x in all_obs[i]]
-        recall, hit_ratio = recall_at_k(expected_chunk_ids[i], obs_chunk_ids)
+        recall, _ = recall_at_k(expected_chunk_ids[i], obs_chunk_ids)
         all_recall.append(recall)
 
-    # 4  Report mean recall across all queries.
+        mrr = mrr_at_k(expected_chunk_ids[i], obs_chunk_ids)
+        all_mrr.append(mrr)
+
+    # 4  Report mean recall and MRR across all queries.
     print(f"Mean Recall@k: {np.array(all_recall).mean()}")
+    print(f"Mean MRR: {np.array(all_mrr).mean()}")
 
     
 
 # --------------------------------------------------------------------------- #
 # CLI entry point
 # --------------------------------------------------------------------------- #
-
-
 def main(
     data_dir: Path = typer.Option("data/eval/queries.jsonl", help="Root directory containing the JSONL files"),
-    db_path: str = typer.Option("rag_demo.db", help="Target Milvus database file"),
+    db_path: str = typer.Option("data/output/rag_demo.db", help="Target Milvus database file"),
     collection: str = typer.Option("demo_collection", help="Milvus collection name"),
     model_name: str = typer.Option(
         "intfloat/e5-large-v2", help="SentenceTransformer model name or path"

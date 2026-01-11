@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.ingest.docx_extract import get_all_chunks
+from ingest.docx_extract_n_chunk import get_all_chunks
 from src.data_import.milvus_import_data import process_pipeline
 from src.vector_store.milvus import Config
 
