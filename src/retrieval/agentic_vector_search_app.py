@@ -1,3 +1,12 @@
+"""
+This is a demo of an agentic search over MS Word data stored in a Milvus vector database.
+It is performed using the GPT-OSS:20b model, and the e5-large-v2 embedding model.
+The LLM decides ("tool_choice": "auto") whether to answer with or without using a tool.
+The avilable tool allows for a similarity search of the vector database.
+The results are then summarised in natural language by the same LLM.
+"""
+
+
 from typing import Tuple
 import typer
 from pathlib import Path
@@ -16,13 +25,6 @@ from src.vector_store.milvus import (
     Config
 )
 
-
-"""
-This is a demo of an agentic search over MS Word data stored in a Milvus vectord database.
-It is performed using GPT-OSS and Mistral 24B/Qwen3:8b models.
-The agent uses tools to seearch/query the database and perform value counts, then summarises the
-results using a separate LLM.
-"""
 
 # --------------------------------------------------------------------------- #
 # Prompt and Funcitons
@@ -80,7 +82,7 @@ logging.basicConfig(
 )
 
 
-summarising_llm = ChatOllama(model="gpt-oss:20b", temperature=1, num_ctx=131072, keep_alive=0, num_gpu=24)
+llm = ChatOllama(model="gpt-oss:20b", temperature=1, num_ctx=131072, keep_alive=0, num_gpu=24)
 
 embedding_model = SentenceTransformer(
     model_name_or_path="intfloat/e5-large-v2", device="cuda", trust_remote_code=True
@@ -109,32 +111,30 @@ def react_agent(question: str, config: Config, max_iters=3):
     print("Model reasoning:\n", reasoning)
 
     # Look for an Action
-    obs, llm_table = tools(response, config)
+    obs, obs_formatted = tools(response, config)
 
-    print(f"User query:{question}\n Available information:" + llm_table)
+    print(f"User query:{question}\n Available information:" + obs_formatted)
 
     messages = [
-        ("system", """ An agentic tool has been used to extract the below data in response to the user query. Output it in natural language.
+        {"role": "system", 
+         "content": """ An agentic tool has been used to extract the below data in response to the user query. Output it in natural language.
                         When returning results clearly define what information originates from the retrieved document and what out of you weights.
-                        Showing data provenance is very important."""),
-        ("human", f"""User query:{question}\n
-                        Available information:"""
-        + llm_table )
+                        Showing data provenance is very important."""},
+        {"role": "user", 
+         "content": f"""User query:{question}\nAvailable information:""" + obs_formatted }
     ]
 
-    result = summarising_llm.invoke(messages)
 
-    eval_metrics = evaluate(
-        user_query=question, observations=obs, llm_response=result.content
-    )
+    final_response = ollama.chat(
+                model="gpt-oss:20b",
+                messages=messages,
+                options = {
+                    "tool_choice": "none",
+                    "temperature": 1
+                    }
+            )
 
-    try:
-        # for Qwen model
-        result = result.content.split("</think>\n\n", 1)[1]
-    except Exception:
-        result = result.content
-
-    return result, reasoning, eval_metrics
+    return final_response.message.content, reasoning 
 
 
 # Here is defined function logic that the agent can use
@@ -163,31 +163,24 @@ def tools(llm_response, config: Config) -> Tuple[list[dict], str]:
         
         if obs:
             obs = [x[0]["entity"] for x in obs]
-            llm_table = format_entities_for_llm(obs)
+            obs_formatted = format_entities_for_llm(obs)
         else:
             obs = "No information was retrieved."
     else:
         obs = f"Unknown action: {action}"
-        llm_table = str(obs)
+        obs_formatted = obs
 
-    return obs, llm_table
-
-
-
-def evaluate(user_query: str, observations: list[str], llm_response: str):
-
-    return {"dummy_eval": 0}
+    return obs, obs_formatted
 
 
 def chatbot_fn(message, history, cfg):
-    answer, reasoning, eval_metrics = react_agent(message, cfg)
+    answer, reasoning = react_agent(message, cfg)
     history.append((message, answer))
-    fig = visualise_metrics(eval_metrics)  # Generate updated metrics plot
-    return history, history, reasoning, fig
+    return history, history, reasoning
 
 def main(
     data_dir: Path = typer.Option("src/demo_docx/chunks.jsonl", help="Root directory containing the JSONL files"),
-    db_path: str = typer.Option("rag_demo.db", help="Target Milvus database file"),
+    db_path: str = typer.Option("data/output/rag_demo.db", help="Target Milvus database file"),
     collection: str = typer.Option("demo_collection", help="Milvus collection name"),
     model_name: str = typer.Option(
         "intfloat/e5-large-v2", help="SentenceTransformer model name or path"
