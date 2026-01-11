@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import Generator
 import numpy as np
-from tqdm import tqdm
 import typer
-from utils.general_util import read_jsonl
+from src.utils.general_util import read_jsonl
 from src.vector_store.milvus import Config, search
 
 def recall_at_k(expected: list[int], observed: list[int]):
@@ -11,15 +10,12 @@ def recall_at_k(expected: list[int], observed: list[int]):
     expected_set = set(expected)
 
     # 2.  Count how many of the top‑k predictions are relevant
-    hits = sum(1 for item in observed if item in expected)
+    hits = sum(1 for item in observed if item in expected_set)
 
     # 3.  The “recall@k” value
     recall_at_k = hits / len(expected)
 
     hit_ratio = f"{hits}/{len(observed)}"
-
-    # print(f"Recall@{len(observed)}: {recall_at_k:.2f}")
-    # print(f"Hit ratio: {hit_ratio}")
 
     return recall_at_k, hit_ratio,
 
@@ -27,7 +23,7 @@ def recall_at_k(expected: list[int], observed: list[int]):
 # ---------------------------------------------------------------- #
 # Evaluate RAG --------------------------------------------------- #
 # ---------------------------------------------------------------- #
-def evaluate_rag(config: Config, test_set) -> None:
+def evaluate_rag(config: Config, test_set: Generator) -> None:
     # Convert the one‑shot generator to a concrete list once.
     # After this point you can iterate over `items` as many times as you like.
     items = list(test_set)          # <-- materialise here
