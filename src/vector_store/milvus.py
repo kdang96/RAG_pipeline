@@ -1,23 +1,13 @@
-from pathlib import Path
 import logging
-import sys
 from typing import TypedDict
 
 import numpy as np
 from pymilvus import MilvusClient
 from src.config.config import Config
 from src.vector_store.embedding import Embedder
-
-# --------------------------------------------------------------------------- #
-# Logging
-# --------------------------------------------------------------------------- #
+from src.config.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    stream=sys.stdout,
-)
 
 
 # --------------------------------------------------------------------------- #
@@ -71,6 +61,7 @@ def get_collection_fields(db_path: str, collection_name: str) -> list[str]:
 def delete_collection(db_path: str, collection_name: str):
     client, _ = connect_to_db(db_path)
     client.drop_collection(collection_name)
+    logger.info(f"Collection {collection_name} in {db_path} successfully deleted.")
 
 
 
@@ -116,12 +107,13 @@ def search(
     client.load_collection(config.collection)
     client.refresh_load(config.collection)
 
-    query_vector = Embedder.embed(user_queries, config)
+    query_vectors = Embedder.embed(user_queries, config)
+    # query_vectors: np.ndarray = embed_texts(user_queries, config)
 
     results = client.search(
         collection_name=config.collection,
         anns_field=search_col,
-        data=query_vector,
+        data=query_vectors,
         limit=k_limit,
         output_fields=output_fields,
         search_params={"metric_type": "COSINE", "radius": search_radius},
@@ -156,13 +148,14 @@ def create_index(
 
     client.close()
 
-    print(f"Index {index_name} in {collection_name} created.")
+    logger.info(f"Index {index_name} in {collection_name} created.")
 
 
 if __name__ == "__main__":
-    client, collections = connect_to_db("./rag_demo.db")
-    print(collections)
-    # client.close()
+    setup_logging()
+    client, collections = connect_to_db("data/output/rag_demo.db")
+    logger.info(f"Existing collections: {collections}")
+    client.close()
 
     delete_collection("data/output/rag_demo.db", collections[0])
 

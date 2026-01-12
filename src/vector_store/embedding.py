@@ -1,25 +1,12 @@
     
 import logging
-import sys
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from src.config.config import Config
 
-# --------------------------------------------------------------------------- #
-# Logging
-# --------------------------------------------------------------------------- #
 logger = logging.getLogger(__name__)
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-#     stream=sys.stdout,
-# )
 
 
-
-# --------------------------------------------------------------------------- #
-# Logging
-# --------------------------------------------------------------------------- #
 class Embedder:
     """Lazy‑loaded SentenceTransformer wrapper."""
 
@@ -40,3 +27,15 @@ class Embedder:
     def embed(cls, texts: list[str], config: Config) -> list[np.ndarray]:
         model = cls.model(config)
         return model.encode(list(texts), convert_to_numpy=True)
+    
+
+def embed_texts(
+    texts: list[str],
+    config: Config
+) -> np.ndarray:
+    model = SentenceTransformer(
+        model_name_or_path=config.model_name,
+        device=config.device,
+        trust_remote_code=config.trust_remote_code,
+    )
+    return model.encode(texts, convert_to_numpy=True)

@@ -9,9 +9,6 @@ The script:
 *   Validates and normalises the data to a stable schema.
 *   Generates embeddings with a SentenceTransformer model.
 *   Inserts the enriched records into a Milvus‑style database.
-
-All I/O is wrapped in robust error handling and the whole
-process is fully typed and easily testable.
 """
 
 import logging
@@ -25,7 +22,7 @@ from tqdm import tqdm
 from src.utils.general_util import format_entities_for_llm, read_jsonl
 from src.vector_store.milvus  import insert_data, VECTOR_DB_ROW, connect_to_db, create_index, does_collection_exist
 from pymilvus import DataType
-from src.vector_store.embedding import Embedder
+from src.vector_store.embedding import Embedder, embed_texts
 from src.config.config import Config
 from src.config.logging_config import setup_logging
 
@@ -37,8 +34,6 @@ logger = logging.getLogger(__name__)
 # --------------------------------------------------------------------------- #
 # DB schema setup
 # --------------------------------------------------------------------------- #
-
-
 def add_soi_collection(db_name:str, name: str) -> None:
     client, _ = connect_to_db(db_name)
     exists = does_collection_exist(db_name, name)
@@ -142,10 +137,10 @@ def process_pipeline(config: Config, chunks: Iterable[dict]| list[dict]) -> None
     # -------------------------------------------------------------------- #
     keys_to_keep = ["doc_title", "heading_2", "heading_3", "heading_4", "chunk"]
     
-    filtered: list[dict[str, Any]] = [{k: v for k, v in chunk.items() if k in keys_to_keep} for chunk in chunks]
+    filtered: list[dict[str, Any]] = [{k: v for k, v in db_row.items() if k in keys_to_keep} for db_row in db_rows]
     to_embed: list[str] = [format_entities_for_llm([item]) for item in filtered]
 
-    embeddings: list = Embedder.embed(to_embed, config)
+    embeddings: np.ndarray = embed_texts(to_embed, config)
 
     # Attach embeddings to the rows
     for row, vector in zip(db_rows, embeddings):
@@ -178,8 +173,6 @@ def process_pipeline(config: Config, chunks: Iterable[dict]| list[dict]) -> None
 # --------------------------------------------------------------------------- #
 # CLI entry point
 # --------------------------------------------------------------------------- #
-
-
 def main(
     data_dir: Path = typer.Option("data/processed/chunks.jsonl", help="Root directory containing the JSONL files"),
     db_path: str = typer.Option("data/output/rag_demo.db", help="Target Milvus database file"),
