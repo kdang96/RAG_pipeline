@@ -12,12 +12,12 @@ import typer
 from pathlib import Path
 import gradio as gr
 from src.config.logging_config import setup_logging
-from src.retrieval.agentic_rag import react_agent
+from src.retrieval.agentic_rag import rag_flow
 from src.config.config import Config
 
 
 def chatbot_fn(message, history, cfg):
-    answer, reasoning = react_agent(message, cfg)
+    answer, reasoning = rag_flow(message, cfg)
     history.append((message, answer))
     return history, history, reasoning
 

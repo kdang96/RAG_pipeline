@@ -1,43 +1,37 @@
 # src/pipelines/data_extraction/simple_data_extraction.py
-# ---------------------------------------------------------
-# Extract plain text from DOCX files, grouping content under the lowest
-# heading within each branch of the heading tree.  For each chunk we
-# record the full hierarchy of parent headings **and their levels** so
-# that downstream components can trace the origin of the text.
-#
-# The output format for each chunk is now:
-#   {
-#       "doc_title": "<file‑name>",
-#       "chunk": "<text‑chunk>",
-#       "heading_path": [
-#           {"title": "Heading 1 title", "level": 1},
-#           {"title": "Heading 2 title", "level": 2},
-#           ...
-#       ]
-#   }
-#
-# CLI usage:
-#   python src/pipelines/data_extraction/simple_data_extraction.py <input‑dir> <output‑jsonl>
-#
-# Programmatic usage:
-#   from src.pipelines.data_extraction.simple_data_extraction import get_all_chunks
-#   chunks = get_all_chunks("/path/to/docx_folder")
-#
-# Dependencies:
-#   pip install python-docx
-#
-# Author: <Your Name>
-# ---------------------------------------------------------
+"""
+Extract plain text from DOCX files, grouping content under the lowest
+heading within each branch of the heading tree.  For each chunk we
+record the full hierarchy of parent headings **and their levels** so
+that downstream components can trace the origin of the text.
+The output format for each chunk is now:
+  {
+      "doc_title": "<file‑name>",
+      "chunk": "<text‑chunk>",
+      "heading_path": [
+          {"title": "Heading 1 title", "level": 1},
+          {"title": "Heading 2 title", "level": 2},
+          ...
+      ]
+  }
 
-import json
+Programmatic usage:
+  from pipelines.run_extraction_n_import import get_all_chunks
+  chunks = get_all_chunks("/path/to/docx_folder")
+"""
+
 import sys
 from pathlib import Path
 import typer
 
+from src.utils.general_util import write_jsonl
+
 try:
     from docx import Document
+    from docx.document import Document as DocumentObject
 except ImportError:
     sys.exit("ERROR: python-docx not installed. Run 'pip install python-docx'.")
+
 
 def get_file_paths(dir_path: str | Path, extension: str) -> list[Path]:
     """Return a list of all *extension* files under *dir_path* (recursively)."""
@@ -45,30 +39,31 @@ def get_file_paths(dir_path: str | Path, extension: str) -> list[Path]:
     json_paths = list(directory.glob(extension))
     return json_paths
 
-def _heading_level(style_name: str) -> int | None:
+def _heading_level(style_name: str | None) -> int | None:
     """
     Convert a style name like 'Heading 1' into an integer level.
     Return None if the style is not a heading.
     """
-    if style_name.startswith("Heading"):
+    if style_name and style_name.startswith("Heading"):
         try:
             return int(style_name.split(" ")[1])
         except (IndexError, ValueError):
             return None
     return None
 
-# ------------------------------------------------------------------
-# Extract text chunks from a single Document object.
-# Each chunk is a flat dict:
-#   {
-#       "doc_title":  <file‑name>,
-#       "heading_2":  <level‑2 heading or "na">,
-#       "heading_3":  <level‑3 heading or "na">,
-#       "heading_4":  <level‑4 heading or "na">,
-#       "chunk":      <text‑chunk>
-#   }
-# ------------------------------------------------------------------
-def extract_chunks_from_doc(doc: Document, title: str, max_chunk_len: int = 2000) -> list[dict[str, str]]:
+
+def extract_chunks_from_doc(doc: DocumentObject, title: str, max_chunk_len: int = 2000) -> list[dict[str, str]]:
+    """
+    Extract text chunks from a single Document object.
+    Each chunk is a flat dict:
+    {
+        "doc_title":  <file‑name>,
+        "heading_2":  <level‑2 heading or "na">,
+        "heading_3":  <level‑3 heading or "na">,
+        "heading_4":  <level‑4 heading or "na">,
+        "chunk":      <text‑chunk>
+    }
+    """
     chunks: list[dict[str, str]] = []
 
     # Keeps the most recent heading for each level that we have seen.
@@ -146,22 +141,14 @@ def get_all_chunks(input_dir: str | Path, max_chunk_len: int = 2000) -> list[dic
         all_chunks.extend(extract_chunks_from_doc(doc, title, max_chunk_len))
 
     chunk_ids: list[dict[str, int]] = [{"chunk_id": i} for i in range(len(all_chunks))]
-    chunks_with_ids: list[dict[str, int]] = [{**cid, **chunk} for cid, chunk in zip(chunk_ids, all_chunks)]
+    chunks_with_ids: list[dict[str, str | int]] = [{**cid, **chunk} for cid, chunk in zip(chunk_ids, all_chunks)]
 
     return chunks_with_ids
 
-def write_jsonl(chunks: list[dict[str, str]], output_path: str) -> None:
-    """
-    Persist a list of chunk dictionaries as JSON Lines.
-    """
-    with open(output_path, "w", encoding="utf-8") as f:
-        for chunk in chunks:
-            json.dump(chunk, f, ensure_ascii=False)
-            f.write("\n")
 
 def main(
     input_dir: Path = typer.Argument("data/input", help="Root directory containing DOCX files"),
-    output_path: Path = typer.Argument("/home/krasimir.angelov@nccdi.local/AI/AI/Code/RAG_pipeline/data/output/chunks.jsonl", help="Destination JSONL file"),
+    output_path: Path = typer.Argument("RAG_pipeline/data/output/chunks.jsonl", help="Destination JSONL file"),
 ) -> None:
     """
     Command‑line entry point – uses typer for argument parsing.

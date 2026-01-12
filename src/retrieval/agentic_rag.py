@@ -1,7 +1,19 @@
+"""
+Minimal agentic retrieval-augmented QA.
+
+An LLM is given access to a single retrieval tool (`similarity_search`) and may
+invoke it to fetch document chunks from a Milvus vector store before answering
+a user query. The agent performs a single tool invocation at most and does not
+use multi-step planning or reflection.
+
+This module is intended for qualitative demonstration only; retrieval quality
+is evaluated separately using an offline pipeline.
+"""
+
+
 from typing import Tuple
 import logging
-import sys
-from langchain_ollama.chat_models import ChatOllama
+from ollama._types import ChatResponse
 import ollama
 from sentence_transformers import SentenceTransformer
 from src.utils.general_util import format_entities_for_llm
@@ -62,18 +74,12 @@ User: {user_query}\n
 
 logger = logging.getLogger(__name__)
 
-
-
-llm = ChatOllama(model="gpt-oss:20b", temperature=1, num_ctx=131072, keep_alive=0, num_gpu=24)
-
 embedding_model = SentenceTransformer(
     model_name_or_path="intfloat/e5-large-v2", device="cuda", trust_remote_code=True
 )
 
-
-
 # ReAct loop for agentic search
-def react_agent(question: str, config: Config, max_iters=3):
+def rag_flow(question: str, config: Config, max_iters=3):
     fields_n_descriptions = get_collection_fields(config.db_path, config.collection)
     logger.info(f"Fields & descriptions: {fields_n_descriptions}")
 
@@ -120,7 +126,14 @@ def react_agent(question: str, config: Config, max_iters=3):
 
 
 # Here is defined function logic that the agent can use
-def tools(llm_response, config: Config) -> Tuple[list[dict], str]:
+def tools(llm_response: ChatResponse, config: Config) -> Tuple[list[dict], str]:
+    """
+    Resolve the LLM's tool call by executing the requested function.
+
+    The function currently supports only the ``similarity_search`` action.
+    It performs a vector similarity query on the Milvus collection and
+    returns both raw and LLM‑friendly formatted results.
+    """
     action = llm_response.message.tool_calls[0].function.name
     args = llm_response.message.tool_calls[0].function.arguments
     action_input = args["input"]
