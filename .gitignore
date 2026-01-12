@@ -5,3 +5,5 @@ vscode_cli.tar.gz
 .env
 .pre-commit-config.yaml
 __pycache__/
+.rag_demo.db.lock
+data/output/rag_demo.db

@@ -14,34 +14,25 @@ All I/O is wrapped in robust error handling and the whole
 process is fully typed and easily testable.
 """
 
-from __future__ import annotations
-
-import json
 import logging
-import sys
 from pathlib import Path
-from typing import Any, Generator, List
+from typing import Any, Iterable, List
 
 import numpy as np
 import typer
 from tqdm import tqdm
 
 from src.utils.general_util import format_entities_for_llm, read_jsonl
-from src.vector_store.milvus  import insert_data, VECTOR_DB_ROW, connect_to_db, create_index, Embedder, Config, does_collection_exist
+from src.vector_store.milvus  import insert_data, VECTOR_DB_ROW, connect_to_db, create_index, does_collection_exist
 from pymilvus import DataType
-
+from src.vector_store.embedding import Embedder
+from src.config.config import Config
+from src.config.logging_config import setup_logging
 
 # --------------------------------------------------------------------------- #
 # Logging
 # --------------------------------------------------------------------------- #
-
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    stream=sys.stdout,
-)
-
 
 # --------------------------------------------------------------------------- #
 # DB schema setup
@@ -133,8 +124,10 @@ def chunk_to_db_row(chunks: dict[str, str|int]) -> VECTOR_DB_ROW:
 # --------------------------------------------------------------------------- #
 
 
-def process_pipeline(config: Config, chunks: Generator[dict]| list[dict]) -> None:
+def process_pipeline(config: Config, chunks: Iterable[dict]| list[dict]) -> None:
     """Run the entire pipeline end‑to‑end."""
+    logger = logging.getLogger(__name__)
+
     if not config.data_dir:
         logger.warning("%s not found.", config.data_dir)
         return
@@ -188,8 +181,8 @@ def process_pipeline(config: Config, chunks: Generator[dict]| list[dict]) -> Non
 
 
 def main(
-    data_dir: Path = typer.Option("src/demo_docx/chunks.jsonl", help="Root directory containing the JSONL files"),
-    db_path: str = typer.Option("rag_demo.db", help="Target Milvus database file"),
+    data_dir: Path = typer.Option("data/processed/chunks.jsonl", help="Root directory containing the JSONL files"),
+    db_path: str = typer.Option("data/output/rag_demo.db", help="Target Milvus database file"),
     collection: str = typer.Option("demo_collection", help="Milvus collection name"),
     model_name: str = typer.Option(
         "intfloat/e5-large-v2", help="SentenceTransformer model name or path"
@@ -213,4 +206,5 @@ def main(
 
 
 if __name__ == "__main__":
+    setup_logging()
     typer.run(main)
