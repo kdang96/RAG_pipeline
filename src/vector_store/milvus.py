@@ -4,7 +4,7 @@ from typing import TypedDict
 import numpy as np
 from pymilvus import MilvusClient
 from src.config.config import Config
-from src.vector_store.embedding import Embedder
+from src.vector_store.embedding import embed_texts
 from src.config.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -107,13 +107,12 @@ def search(
     client.load_collection(config.collection)
     client.refresh_load(config.collection)
 
-    query_vectors = Embedder.embed(user_queries, config)
-    # query_vectors: np.ndarray = embed_texts(user_queries, config)
+    query_vectors: np.ndarray = embed_texts(user_queries, config)
 
     results = client.search(
         collection_name=config.collection,
         anns_field=search_col,
-        data=query_vectors,
+        data=list(query_vectors),
         limit=k_limit,
         output_fields=output_fields,
         search_params={"metric_type": "COSINE", "radius": search_radius},

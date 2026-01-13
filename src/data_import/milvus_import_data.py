@@ -22,7 +22,7 @@ from tqdm import tqdm
 from src.utils.general_util import format_entities_for_llm, read_jsonl
 from src.vector_store.milvus  import insert_data, VECTOR_DB_ROW, connect_to_db, create_index, does_collection_exist
 from pymilvus import DataType
-from src.vector_store.embedding import Embedder, embed_texts
+from src.vector_store.embedding import embed_texts
 from src.config.config import Config
 from src.config.logging_config import setup_logging
 
