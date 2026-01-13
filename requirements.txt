@@ -1,0 +1,9 @@
+gradio==6.3.0
+numpy==2.4.1
+ollama==0.6.1
+pymilvus==2.6.6
+pymilvus[milvus]
+python_docx==1.2.0
+sentence_transformers==5.2.0
+tqdm==4.67.1
+typer==0.21.1

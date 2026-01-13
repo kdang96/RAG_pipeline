@@ -6,16 +6,20 @@ Evaluation-Driven Retrieval for Document-Grounded Assistants
 This repository explores the design and evaluation of a document-grounded retrieval system intended for use in assistant-style autonomous agents. The focus is on evaluation-driven development, where retrieval quality is assessed independently of large language model (LLM) generation to ensure clear attribution of system behaviour.
 
 The project demonstrates:
+- structured ingestion of heterogeneous .docx documents
+- heading-aware text chunking
+- vector-based semantic retrieval
+- offline retrieval evaluation (Recall@k, MRR)
+- integration of retrieval into a minimal agentic assistant with tool-use
 
-structured ingestion of heterogeneous .docx documents
+## Setup
 
-heading-aware text chunking
+\`\`\`bash
+git clone https://github.com/kdang96/RAG_pipeline.git
+cd RAG_pipeline
 
-vector-based semantic retrieval
-
-offline retrieval evaluation (Recall@k, MRR)
-
-integration of retrieval into a minimal agentic assistant with tool-use
+pip install -r requirements.txt
+pip install -e .
 
 # Motivation
 

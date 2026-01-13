@@ -79,14 +79,14 @@ embedding_model = SentenceTransformer(
 )
 
 # ReAct loop for agentic search
-def rag_flow(question: str, config: Config, max_iters=3):
+def rag_flow(question: str, config: Config):
     fields_n_descriptions = get_collection_fields(config.db_path, config.collection)
     logger.info(f"Fields & descriptions: {fields_n_descriptions}")
 
     prompt = BASE_PROMPT.format(user_query=question, fields=fields_n_descriptions)
 
 
-    response = ollama.chat(
+    initial_response = ollama.chat(
                     model="gpt-oss:20b",
                     messages=[{"role": "user", "content": prompt}],
                     tools=TOOLS,
@@ -95,34 +95,37 @@ def rag_flow(question: str, config: Config, max_iters=3):
                         "temperature": 1
                         }
                 )
-    reasoning = response.message.thinking
-    logger.info("Model reasoning:\n", reasoning)
+    initial_reasoning = initial_response.message.thinking
+    logger.info("Model initial reasoning:\n", initial_reasoning)
 
-    # Look for an Action
-    obs, obs_formatted = tools(response, config)
+    if initial_response.message.tool_calls:
+        # Look for an Action
+        obs, obs_formatted = tools(initial_response, config)
 
-    logger.info(f"User query:{question}\n Available information:" + obs_formatted)
+        logger.info(f"User query:{question}\n Available information:" + obs_formatted)
 
-    messages = [
-        {"role": "system", 
-         "content": """ An agentic tool has been used to extract the below data in response to the user query. Output it in natural language.
-                        When returning results clearly define what information originates from the retrieved document and what out of you weights.
-                        Showing data provenance is very important."""},
-        {"role": "user", 
-         "content": f"""User query:{question}\nAvailable information:""" + obs_formatted }
-    ]
+        messages = [
+            {"role": "system", 
+            "content": """ An agentic tool has been used to extract the below data in response to the user query. Output it in natural language.
+                            When returning results clearly define what information originates from the retrieved document and what out of you weights.
+                            Showing data provenance is very important."""},
+            {"role": "user", 
+            "content": f"""User query:{question}\nAvailable information:""" + obs_formatted }
+        ]
 
 
-    final_response = ollama.chat(
-                model="gpt-oss:20b",
-                messages=messages,
-                options = {
-                    "tool_choice": "none",
-                    "temperature": 1
-                    }
-            )
+        final_response = ollama.chat(
+                    model="gpt-oss:20b",
+                    messages=messages,
+                    options = {
+                        "tool_choice": "none",
+                        "temperature": 1
+                        }
+                )
 
-    return final_response.message.content, reasoning 
+        return final_response.message.content, initial_reasoning 
+    else:
+        return initial_response.message.content, initial_reasoning
 
 
 # Here is defined function logic that the agent can use
