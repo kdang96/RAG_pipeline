@@ -118,7 +118,6 @@ def extract_chunks_from_doc(doc: DocumentObject, title: str, max_chunk_len: int 
         current_text.append(text)
 
         # Optional: enforce a maximum chunk size by characters.
-        # (uncomment if you need early flushing of large blocks)
         # if sum(len(p) for p in current_text) >= max_chunk_len:
         #     flush_chunk()
 

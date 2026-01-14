@@ -156,14 +156,6 @@ if __name__ == "__main__":
     logger.info(f"Existing collections: {collections}")
     client.close()
 
-    delete_collection("data/output/rag_demo.db", collections[0])
-
-    # create_index(
-    #     db_path="data/output/rag_demo.db",
-    #     collection_name="demo_collection",
-    #     vector_col_name="combined_vector",
-    #     index_name="combined_vector_index",
-    # )
-
-  
+    # Only use is if you want to start anew.
+    # delete_collection("data/output/rag_demo.db", collections[0])
 
