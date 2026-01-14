@@ -24,7 +24,7 @@ def chatbot_fn(message, history, cfg):
 
 
 def app(config: Config):
-        # Demo Gradio interface created inside main so we can capture `config` and pass it to the rag() function
+    # Demo Gradio interface created inside main so we can capture `config` and pass it to the rag() function
     with gr.Blocks() as demo:
         gr.Markdown("## Demo Agentic RAG ChatBot")
 
