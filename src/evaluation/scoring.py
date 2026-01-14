@@ -1,6 +1,6 @@
 from typing import Generator
-from src.vector_store.milvus import search
-from src.config.config import Config
+from vector_store.milvus import search
+from config.config import Config
 
 
 """

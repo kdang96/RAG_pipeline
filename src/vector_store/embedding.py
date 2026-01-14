@@ -2,7 +2,7 @@
 import logging
 import numpy as np
 from sentence_transformers import SentenceTransformer
-from src.config.config import Config
+from config.config import Config
 
 logger = logging.getLogger(__name__)
     

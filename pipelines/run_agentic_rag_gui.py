@@ -11,14 +11,15 @@ import logging
 import typer
 from pathlib import Path
 import gradio as gr
-from src.config.logging_config import setup_logging
-from src.retrieval.agentic_rag import rag_flow
-from src.config.config import Config
+from config.logging_config import setup_logging
+from retrieval.agentic_rag import rag_flow
+from config.config import Config
 
 
 def chatbot_fn(message, history, cfg):
     answer, reasoning = rag_flow(message, cfg)
-    history.append((message, answer))
+    history.append({"role": "user", "content": message})
+    history.append({"role": "assistant", "content": answer})
     return history, history, reasoning
 
 

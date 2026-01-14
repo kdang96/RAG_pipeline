@@ -12,10 +12,10 @@ Typical usage:
 
 import typer
 from pathlib import Path
-from src.ingest.docx_extract_n_chunk import get_all_chunks
-from src.data_import.milvus_import_data import process_pipeline
-from src.config.config import Config
-from src.config.logging_config import setup_logging
+from ingest.docx_extract_n_chunk import get_all_chunks
+from data_import.milvus_import_data import process_pipeline
+from config.config import Config
+from config.logging_config import setup_logging
 
 
 def run_pipline(docx_dir: str | Path):
