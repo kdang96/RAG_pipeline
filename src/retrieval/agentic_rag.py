@@ -122,7 +122,7 @@ def rag_flow(question: str, config: Config):
                         "temperature": 1
                         }
                 )
-
+        # TODO: this is currently not working.
         return final_response.message.content, initial_reasoning 
     else:
         return initial_response.message.content, initial_reasoning

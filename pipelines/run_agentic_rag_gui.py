@@ -21,6 +21,7 @@ def chatbot_fn(message, history, cfg):
     history.append((message, answer))
     return history, history, reasoning
 
+
 def app(config: Config):
         # Demo Gradio interface created inside main so we can capture `config` and pass it to the rag() function
     with gr.Blocks() as demo:
