@@ -16,9 +16,9 @@ import logging
 from ollama._types import ChatResponse
 import ollama
 from sentence_transformers import SentenceTransformer
-from src.utils.general_util import format_entities_for_llm
-from src.config.config import Config
-from src.vector_store.milvus import (
+from utils.general_util import format_entities_for_llm
+from config.config import Config
+from vector_store.milvus import (
     get_collection_fields,
     search
 )
@@ -59,7 +59,11 @@ TOOLS = [
 
 # Base Prompt:
 BASE_PROMPT = """You are an intelligent assistant that can answer questions using ReAct framework.
-Do not hallucinate! You won't yet have the answers until you use the tools and incorporate the results.
+You can choose between using the tool available or answering from your own weights, but you need to make that decision explicit.
+
+The tool gives you access to a database on information relating to legislation and treaties from the European Union.
+
+If you are to use the tools, the below-mentioned information is important.
 
 Field: database field to search in, one of {fields}\n
 For fields that have a vector equivalent, use the Search function on the vector field.
@@ -122,10 +126,10 @@ def rag_flow(question: str, config: Config):
                         "temperature": 1
                         }
                 )
-        # TODO: this is currently not working.
+        
         return final_response.message.content, initial_reasoning 
-    else:
-        return initial_response.message.content, initial_reasoning
+
+    return initial_response.message.content, initial_reasoning
 
 
 # Here is defined function logic that the agent can use

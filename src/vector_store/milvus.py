@@ -3,9 +3,9 @@ from typing import TypedDict
 
 import numpy as np
 from pymilvus import MilvusClient
-from src.config.config import Config
-from src.vector_store.embedding import embed_texts
-from src.config.logging_config import setup_logging
+from config.config import Config
+from vector_store.embedding import embed_texts
+from config.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
 

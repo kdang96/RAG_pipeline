@@ -3,10 +3,10 @@ from pathlib import Path
 
 import numpy as np
 import typer
-from src.evaluation.scoring import evaluate_rag
-from src.config.config import Config
-from src.utils.general_util import read_jsonl
-from src.config.logging_config import setup_logging
+from evaluation.scoring import evaluate_rag
+from config.config import Config
+from utils.general_util import read_jsonl
+from config.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
 

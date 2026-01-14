@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 import typer
 
-from src.utils.general_util import write_jsonl
+from utils.general_util import write_jsonl
 
 try:
     from docx import Document
