@@ -115,3 +115,6 @@ Retrieval performance may not generalise to large, noisy corpora.
 The agentic demo is qualitative and not evaluated quantitatively.
 
 These limitations are intentional to keep the system focused and interpretable.
+
+# Next steps
+Quantitative evaluation of agent decision quality — measuring tool invocation accuracy (when to retrieve vs. answer from context) against a labelled query set, mirroring the offline evaluation approach used for retrieval.
