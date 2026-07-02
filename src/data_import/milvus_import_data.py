@@ -123,10 +123,6 @@ def process_pipeline(config: Config, chunks: Iterable[dict]| list[dict]) -> None
     """Run the entire pipeline end‑to‑end."""
     logger = logging.getLogger(__name__)
 
-    if not config.data_dir:
-        logger.warning("%s not found.", config.data_dir)
-        return
-
     db_rows: List[VECTOR_DB_ROW] = []
 
     for chunk in tqdm(chunks, desc="Processing chunks"):
@@ -175,22 +171,25 @@ def process_pipeline(config: Config, chunks: Iterable[dict]| list[dict]) -> None
 # --------------------------------------------------------------------------- #
 def main(
     data_dir: Path = typer.Option("data/processed/chunks.jsonl", help="Root directory containing the JSONL files"),
-    db_path: str = typer.Option("data/output/rag_demo.db", help="Target Milvus database file"),
-    collection: str = typer.Option("demo_collection", help="Milvus collection name"),
-    model_name: str = typer.Option(
-        "intfloat/e5-large-v2", help="SentenceTransformer model name or path"
+    db_path: str | None = typer.Option(None, help="Target Milvus database file (env: RAG_DB_PATH)"),
+    collection: str | None = typer.Option(None, help="Milvus collection name (env: RAG_COLLECTION)"),
+    model_name: str | None = typer.Option(
+        None, help="SentenceTransformer model name or path (env: RAG_MODEL_NAME)"
     ),
-    device: str = typer.Option("cuda", help="Device to run the embedding model on"),
-    trust_remote_code: bool = typer.Option(True, help="Whether to trust remote code when loading the model")
+    device: str | None = typer.Option(None, help="Device to run the embedding model on (env: RAG_DEVICE)"),
+    trust_remote_code: bool | None = typer.Option(
+        None, help="Whether to trust remote code when loading the model (env: RAG_TRUST_REMOTE_CODE)"
+    ),
 ) -> None:
-    config = Config(
-        data_dir=data_dir,
-        db_path=db_path,
-        collection=collection,
-        model_name=model_name,
-        device=device,
-        trust_remote_code=trust_remote_code,
-    )
+    overrides = {
+        "data_dir": data_dir,
+        "db_path": db_path,
+        "collection": collection,
+        "model_name": model_name,
+        "device": device,
+        "trust_remote_code": trust_remote_code,
+    }
+    config = Config(**{k: v for k, v in overrides.items() if v is not None})
     chunks = read_jsonl(data_dir)
 
     logger.info("Running with config: %s", config)
