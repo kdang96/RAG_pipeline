@@ -147,7 +147,7 @@ def get_all_chunks(input_dir: str | Path, max_chunk_len: int = 2000) -> list[dic
 
 def main(
     input_dir: Path = typer.Argument("data/input", help="Root directory containing DOCX files"),
-    output_path: Path = typer.Argument("RAG_pipeline/data/output/chunks.jsonl", help="Destination JSONL file"),
+    output_path: Path = typer.Argument("data/output/chunks.jsonl", help="Destination JSONL file"),
 ) -> None:
     """
     Command‑line entry point – uses typer for argument parsing.
