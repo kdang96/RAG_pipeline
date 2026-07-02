@@ -28,14 +28,7 @@ def run_pipline(docx_dir: str | Path):
     # Import in Milvus vector database
     # --------------------------------------------------------------------------- #
     process_pipeline(
-        Config(
-            data_dir=Path("data/processed/chunks.jsonl"),
-            db_path="data/output/rag_demo.db",
-            collection="demo_collection",
-            model_name="intfloat/e5-large-v2",
-            device="cuda",
-            trust_remote_code=True,
-        ),
+        Config(data_dir=Path("data/processed/chunks.jsonl")),
         chunks
         )
 
