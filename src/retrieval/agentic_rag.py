@@ -15,7 +15,6 @@ from typing import Tuple
 import logging
 from ollama._types import ChatResponse
 import ollama
-from sentence_transformers import SentenceTransformer
 from utils.general_util import format_entities_for_llm
 from config.config import Config
 from vector_store.milvus import (
@@ -78,21 +77,19 @@ User: {user_query}\n
 
 logger = logging.getLogger(__name__)
 
-embedding_model = SentenceTransformer(
-    model_name_or_path="intfloat/e5-large-v2", device="cuda", trust_remote_code=True
-)
 
 # ReAct loop for agentic search
-def rag_flow(question: str, config: Config):
+def rag_flow(question: str, config: Config, history: list[dict] | None = None):
     fields_n_descriptions = get_collection_fields(config.db_path, config.collection)
     logger.info(f"Fields & descriptions: {fields_n_descriptions}")
 
     prompt = BASE_PROMPT.format(user_query=question, fields=fields_n_descriptions)
 
+    prior_turns = history or []
 
     initial_response = ollama.chat(
                     model="gpt-oss:20b",
-                    messages=[{"role": "user", "content": prompt}],
+                    messages=[*prior_turns, {"role": "user", "content": prompt}],
                     tools=TOOLS,
                     options = {
                         "tool_choice": "auto",
@@ -100,7 +97,7 @@ def rag_flow(question: str, config: Config):
                         }
                 )
     initial_reasoning = initial_response.message.thinking
-    logger.info("Model initial reasoning:\n", initial_reasoning)
+    logger.info("Model initial reasoning:\n%s", initial_reasoning)
 
     if initial_response.message.tool_calls:
         # Look for an Action
@@ -109,11 +106,12 @@ def rag_flow(question: str, config: Config):
         logger.info(f"User query:{question}\n Available information:" + obs_formatted)
 
         messages = [
-            {"role": "system", 
+            *prior_turns,
+            {"role": "system",
             "content": """ An agentic tool has been used to extract the below data in response to the user query. Output it in natural language.
                             When returning results clearly define what information originates from the retrieved document and what out of you weights.
                             Showing data provenance is very important."""},
-            {"role": "user", 
+            {"role": "user",
             "content": f"""User query:{question}\nAvailable information:""" + obs_formatted }
         ]
 
@@ -145,15 +143,10 @@ def tools(llm_response: ChatResponse, config: Config) -> Tuple[list[dict], str]:
     args = llm_response.message.tool_calls[0].function.arguments
     action_input = args["input"]
 
-    logger.info("Function:", action)
-    logger.info("Tools args:\n", args)
+    logger.info("Function: %s", action)
+    logger.info("Tools args:\n%s", args)
 
     if action.lower() == "similarity_search":
-        output_fields = args["output_fields"]
-
-        if "scope" not in output_fields:
-            output_fields.append("scope")
-
         obs = search(
             config=config,
             user_queries=[action_input],

@@ -19,10 +19,13 @@ def read_jsonl(path: Path) -> Generator[Any, Any, Any]:
 def write_jsonl(chunks: list[dict[str, Any]], output_path: Path | str) -> None:
     """
     Persist a list of chunk dictionaries as JSON Lines.
+
+    ``output_path`` is resolved relative to the current working directory,
+    same as any other file path a CLI tool is handed.
     """
 
-    ROOT = Path(__file__).resolve().parents[3]
-    full_output_path = ROOT / output_path
+    full_output_path = Path(output_path)
+    full_output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(full_output_path, "w", encoding="utf-8") as f:
         for chunk in chunks:
             json.dump(chunk, f, ensure_ascii=False)
