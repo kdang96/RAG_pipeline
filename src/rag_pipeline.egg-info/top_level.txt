@@ -1,7 +1,0 @@
-config
-data_import
-evaluation
-ingest
-retrieval
-utils
-vector_store
