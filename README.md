@@ -18,8 +18,23 @@ The project demonstrates:
 git clone https://github.com/kdang96/RAG_pipeline.git
 cd RAG_pipeline
 
-pip install -r requirements.txt
 pip install -e .
+\`\`\`
+
+Dependencies are declared in `pyproject.toml`. To also install the test/lint/type-check tooling:
+
+\`\`\`bash
+pip install -e ".[dev]"
+\`\`\`
+
+## Testing
+
+The retrieval, ingestion, import and evaluation modules have unit tests under `tests/`, with the
+external dependencies (SentenceTransformer, MilvusClient, Ollama) stubbed out:
+
+\`\`\`bash
+pytest
+\`\`\`
 
 # Motivation
 
