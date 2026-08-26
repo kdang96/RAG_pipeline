@@ -36,6 +36,25 @@ external dependencies (SentenceTransformer, MilvusClient, Ollama) stubbed out:
 pytest
 \`\`\`
 
+## Running the pipelines
+
+Three entry points under `pipelines/`, run directly with Python:
+
+\`\`\`bash
+# 1. Extract .docx -> chunks, embed, and load into a local Milvus-Lite database
+python pipelines/run_extraction_n_import.py --docx-dir data/input
+
+# 2. Offline retrieval evaluation (Recall@k, MRR) -- no LLM involved
+python pipelines/run_retrieval_eval.py
+
+# 3. Launch the Gradio agentic RAG demo
+python pipelines/run_agentic_rag_gui.py
+\`\`\`
+
+The agentic demo requires [Ollama](https://ollama.com) running locally with the `gpt-oss:20b` model
+pulled (`ollama pull gpt-oss:20b`). It is the only part of the repo that depends on an LLM; ingestion,
+vector storage and evaluation do not.
+
 # Motivation
 
 In assistant systems, failures are often difficult to diagnose because retrieval, reasoning, and generation are tightly coupled. This project deliberately decouples retrieval evaluation from generation, allowing retrieval quality to be measured deterministically before introducing an LLM.
